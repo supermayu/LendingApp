@@ -52139,6 +52139,10 @@ definitions:
         type: string
       lender:
         type: string
+  username.loan.loan.MsgApproveLoanResponse:
+    type: object
+  username.loan.loan.MsgRequestLoanResponse:
+    type: object
   username.loan.loan.Params:
     type: object
     description: Params defines the parameters for the module.

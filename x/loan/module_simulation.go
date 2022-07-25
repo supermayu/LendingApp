@@ -24,7 +24,15 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgRequestLoan = "op_weight_msg_request_loan"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRequestLoan int = 100
+
+	opWeightMsgApproveLoan = "op_weight_msg_approve_loan"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgApproveLoan int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -57,6 +65,28 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgRequestLoan int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRequestLoan, &weightMsgRequestLoan, nil,
+		func(_ *rand.Rand) {
+			weightMsgRequestLoan = defaultWeightMsgRequestLoan
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRequestLoan,
+		loansimulation.SimulateMsgRequestLoan(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgApproveLoan int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgApproveLoan, &weightMsgApproveLoan, nil,
+		func(_ *rand.Rand) {
+			weightMsgApproveLoan = defaultWeightMsgApproveLoan
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgApproveLoan,
+		loansimulation.SimulateMsgApproveLoan(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 
